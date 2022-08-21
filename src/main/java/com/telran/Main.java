@@ -24,6 +24,9 @@ public class Main {
 
         Product product = Product.fromString("tea^2356^desc1^drinks^true");
         fileProductStore.add(product);
+
+        Product product2 = Product.fromString("coffe^2343356^desc2^drinks^false");
+        fileProductStore.add(product2);
     }
 
     private static String getConsoleMessage(String caption) {
