@@ -1,9 +1,6 @@
 package com.telran;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class AddProductFile {
     Product product;
@@ -13,8 +10,8 @@ public class AddProductFile {
     }
 
     public boolean add() {
-        String path = "cafe/products/" + product.getCategory();
-        String pathname = path + "/" + product.getName() + ".cafe";
+        String path = FileProductStore.PATH_PREFIX + product.getCategory();
+        String pathname = path + File.separator + product.getName() + FileProductStore.FILE_EXTENSION;
         if (checkProductExists(pathname)) return false;
         ensureDirectoryExists(path);
         if (!writeProduct(product, pathname)) return false;
@@ -33,9 +30,10 @@ public class AddProductFile {
     }
 
     private boolean writeProduct(Product product, String pathname) {
-        try (FileWriter fileWriter = new FileWriter(pathname);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
-            writer.write(product.toString());
+        try (FileOutputStream fos = new FileOutputStream(pathname);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(product);
+            oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
             return false;

@@ -1,11 +1,15 @@
 package com.telran;
 
-public class Product {
-    String name;
-    int price;
-    String description;
-    String category;
-    boolean isAvailable;
+import java.io.Serializable;
+
+public class Product implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String name;
+    private int price;
+    private String description;
+    private String category;
+    private boolean isAvailable;
 
     public Product(String name, int price, String description, String category, boolean isAvailable) {
         this.name = name;
@@ -58,13 +62,5 @@ public class Product {
     @Override
     public String toString() {
         return String.format("%s^%d^%s^%s^%b", name, price, description, category, isAvailable);
-    }
-
-    public static Product fromString(String productString){
-        String[] elements = productString.split("\\^");
-        if (elements.length != 5){
-            throw new IllegalArgumentException("You should provide all fields of products: name, price, description, category, isAvailable.");
-        }
-        return new Product(elements[0], Integer.parseInt(elements[1]), elements[2], elements[3], Boolean.parseBoolean(elements[4]));
     }
 }

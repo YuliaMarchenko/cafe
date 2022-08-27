@@ -1,20 +1,20 @@
 package com.telran;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductStore {
-    public boolean add(Product product);
+    boolean add(Product product);
 
-    public List<String> list();
+    List<String> list();
 
-    public List<String> listAvailable();
+    List<String> listAvailable();
 
-    public Product getProductInfoByPath(String path) throws FileNotFoundException;
+    Product getProductInfoByPath(String path) throws IOException, ClassNotFoundException;
 
-    public Product getProductInfoByLookup(String category, String name) throws FileNotFoundException;
+    Product getProductInfoByLookup(String category, String name) throws IOException, ClassNotFoundException;
 
-    public boolean deleteByPath(String path);
+    boolean deleteByPath(String path);
 
-    public boolean deleteByLookup(String category, String name);
+    boolean deleteByLookup(String category, String name);
 }

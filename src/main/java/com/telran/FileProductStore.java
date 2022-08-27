@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 public class FileProductStore implements ProductStore {
     public static final String PRODUCTS_PATH = "cafe/products.cafe";
+    public static final String PATH_PREFIX = "cafe/products/";
+    public static final String FILE_EXTENSION = ".cafe";
 
     @Override
     public boolean add(Product product) {
@@ -29,17 +31,24 @@ public class FileProductStore implements ProductStore {
     }
 
     @Override
-    public Product getProductInfoByPath(String pathname) throws FileNotFoundException {
+    public Product getProductInfoByPath(String pathname) throws IOException, ClassNotFoundException {
         File directory = new File(pathname);
         if (!directory.exists()) {
             throw new FileNotFoundException();
         }
-        return Product.fromString(FileHelper.readByLine(pathname).get(0));
+        return deserialize(pathname);
+    }
+
+    private static Product deserialize(String pathname) throws IOException, ClassNotFoundException {
+        try (FileInputStream fis = new FileInputStream(pathname);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return (Product) ois.readObject();
+        }
     }
 
     @Override
-    public Product getProductInfoByLookup(String category, String name) throws FileNotFoundException {
-        String path = String.format("cafe/products/%s/%s.cafe", category, name);
+    public Product getProductInfoByLookup(String category, String name) throws IOException, ClassNotFoundException {
+        String path = String.format("%s/%s/%s%s", PATH_PREFIX, category, name, FILE_EXTENSION);
         return getProductInfoByPath(path);
     }
 
@@ -65,7 +74,7 @@ public class FileProductStore implements ProductStore {
 
     @Override
     public boolean deleteByLookup(String category, String name) {
-        String path = String.format("cafe/products/%s/%s.cafe", category, name);
+        String path = String.format("%s/%s/%s%s", PATH_PREFIX, category, name, FILE_EXTENSION);
         return deleteByPath(path);
     }
 }
