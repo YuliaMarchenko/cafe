@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProductStore {
-    boolean add(Product product);
+    boolean add(Product product) throws IOException;
 
     List<String> list();
 
@@ -14,7 +14,7 @@ public interface ProductStore {
 
     Product getProductInfoByLookup(String category, String name) throws IOException, ClassNotFoundException;
 
-    boolean deleteByPath(String path);
+    boolean deleteByPath(String path) throws IOException;
 
-    boolean deleteByLookup(String category, String name);
+    boolean deleteByLookup(String category, String name) throws IOException;
 }

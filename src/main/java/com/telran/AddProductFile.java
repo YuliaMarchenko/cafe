@@ -10,24 +10,13 @@ public class AddProductFile {
     }
 
     public boolean add() {
-        String path = FileProductStore.PATH_PREFIX + product.getCategory();
-        String pathname = path + File.separator + product.getName() + FileProductStore.FILE_EXTENSION;
+        String path = ProductFileHelper.getProductsPath(product);
+        String pathname = ProductFileHelper.getPathName(product);
         if (checkProductExists(pathname)) return false;
         ensureDirectoryExists(path);
-        if (!writeProduct(product, pathname)) return false;
-        return addToProductsList(product, pathname);
+        return writeProduct(product, pathname);
     }
 
-    private boolean addToProductsList(Product product, String pathname) {
-        try (FileWriter fileWriter = new FileWriter(FileProductStore.PRODUCTS_PATH, true);
-             BufferedWriter writer = new BufferedWriter(fileWriter)) {
-            writer.write(String.format("%s^%s^%b\n", product.getName(), pathname, product.isAvailable()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
 
     private boolean writeProduct(Product product, String pathname) {
         try (FileOutputStream fos = new FileOutputStream(pathname);
