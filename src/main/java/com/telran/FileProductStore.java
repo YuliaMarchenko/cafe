@@ -1,22 +1,23 @@
 package com.telran;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FileProductStore implements ProductStore {
-    private List<ProductListItem> productListItems;
+    private Map<String, ProductListItem> productListItems;
 
     public FileProductStore() throws IOException, ClassNotFoundException {
         File productFile = new File(ProductFileHelper.PRODUCTS_PATH);
         if (productFile.exists()) {
             try (FileInputStream fis = new FileInputStream(ProductFileHelper.PRODUCTS_PATH);
                  ObjectInputStream ois = new ObjectInputStream(fis)) {
-                productListItems = (ArrayList<ProductListItem>) ois.readObject();
+                productListItems = (HashMap<String, ProductListItem>) ois.readObject();
             }
         }else {
-            productListItems = new ArrayList<>();
+            productListItems = new HashMap<>();
         }
     }
 
@@ -25,7 +26,7 @@ public class FileProductStore implements ProductStore {
         boolean result = new AddProductFile(product).add();
         if (result) {
             ProductListItem productListItem = new ProductListItem(product.getName(), ProductFileHelper.getPathName(product), product.isAvailable());
-            productListItems.add(productListItem);
+            productListItems.put(productListItem.getPath(), productListItem);
             writeProductsList();
             return true;
         }
@@ -42,12 +43,12 @@ public class FileProductStore implements ProductStore {
 
     @Override
     public List<String> list() {
-        return productListItems.stream().map(item -> item.getName()).collect(Collectors.toList());
+        return productListItems.values().stream().map(item -> item.getName()).collect(Collectors.toList());
     }
 
     @Override
     public List<String> listAvailable() {
-        return productListItems.stream().filter(item -> item.isAvailable()).map(item -> item.getName()).collect(Collectors.toList());
+        return productListItems.values().stream().filter(item -> item.isAvailable()).map(item -> item.getName()).collect(Collectors.toList());
     }
 
     @Override
@@ -76,9 +77,7 @@ public class FileProductStore implements ProductStore {
     public boolean deleteByPath(String path) throws IOException {
         File file = new File(path);
         if (file.delete()) {
-            productListItems = productListItems.stream()
-                    .filter(item -> !item.getPath().equals(path))
-                    .collect(Collectors.toList());
+            productListItems.remove(path);
             writeProductsList();
         }
         return true;
